@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="getRating.js"></script>
+<script>
+var chartType = 'spline' // spline or line
+
+function formatDate(date) {
+	return [date.getDate(), date.getMonth() + 1, date.getFullYear()]
+}
+
+// Generating data
+var players = ["Boxbox","Yassuo","Voyboy","xChocobars","fuslie","NymN","Lex Veldhuis","ItsSlikeR","xQc","LIRIK","Reckful","Forsen","moistcr1tikal","Lugwig"];
+var colors = ["silver", "gray", "red", "maroon", "yellow", "olive", "lime", "green", "aqua", "teal", "blue", "navy", "fuchsia", "purple"];
+var graphData = [];
+// var currentDate = Date.now()
+var currentDate = new Date(1591056000000);
+for (j in players) {
+	var d = new Date(1588377600000); // May 1st, 2020
+	var day = 1;
+	var player = players[j]
+	var dataPoints = []
+	while (d.getTime() < currentDate) {
+		let date = new Date(d.getTime())
+		dataPoints.push({x: date, y: getRating(player, ...formatDate(date))})
+		d.setDate(day++)
+	}
+	graphData.push({
+		type: chartType,
+		name: player,
+		color: colors[j],
+		showInLegend: true,
+		dataPoints: dataPoints,
+		visible: true
+	});
+}
+	
+window.onload = function () {
+	var chart = new CanvasJS.Chart("chartContainer", {
+	title:{
+		text: "Blitz Chess Rating Over Time"
+	},
+	axisY:[{
+		title: "ELO",
+		lineColor: "#000",
+		tickColor: "#000",
+		labelFontColor: "#000",
+		titleFontColor: "#000",
+		// suffix: ""
+	}],
+	toolTip: {
+		shared: true
+	},
+	legend: {
+		cursor: "pointer",
+		itemclick: toggleDataSeries
+	},
+	data: graphData
+});
+chart.render();
+function toggleDataSeries(e) {
+	if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else {
+		e.dataSeries.visible = true;
+	}
+	e.chart.render();
+}
+
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 100vh; width: 100vw;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+</html>
